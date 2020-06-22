@@ -3,11 +3,19 @@ resource "random_string" "password" {
   special = false
 }
 
+data "aws_ami" "f5_ami" {
+  most_recent = true
+  owners      = ["679593333241"]
+
+  filter {
+    name   = "name"
+    values = ["${var.f5_ami_search_name}"]
+  }
+}
+
 resource "aws_instance" "f5" {
 
-  #F5 BIGIP-14.1.0.3-0.0.6 PAYG-Good 25Mbps-190326002717
-  ami = "ami-00a9fd893d5d15cf6"
-
+  ami = "${data.aws_ami.f5_ami.id}"
   instance_type               = "m5.xlarge"
   private_ip                  = "10.0.0.200"
   associate_public_ip_address = true
